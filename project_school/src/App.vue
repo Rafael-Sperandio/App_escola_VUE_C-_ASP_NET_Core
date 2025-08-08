@@ -1,16 +1,27 @@
 <template>
-  <div id="app">
-    <Alunos/>
+  <div id="App">
+    <Nav/>
+    <div class="marginPrincipal">
+      <router-view :key="$route.fullPath"></router-view>
+      <!-- <Sobre/>
+      <Professores/>
+      <Alunos/> -->
+    </div>
   </div>
 </template>
 
 <script>
-import Alunos from './components/Aluno/Alunos.vue'
-
+// import Sobre from './components/Sobre/Sobre.vue'
+// import Professores from './components/Professor/Professor.vue'
+// import Alunos from './components/Aluno/Alunos.vue'
+import Nav from './components/_nav/Nav.vue'
 export default {
   name: 'App',
   components: {
-    Alunos
+    // Alunos,
+    // Professores,
+    // Sobre,
+    Nav
   }
 }
 </script>
@@ -28,7 +39,12 @@ body, html {
   margin: 0;
   height: 100%;
 }
-#app {
+.marginPrincipal{
+    width: 50%;
+    margin: auto;
+}
+#App {
+  width: 100%;
 
 }
 .btn_remove{
@@ -39,11 +55,10 @@ body, html {
 .btn{
   padding: 10px 20px;
   cursor: pointer;
-  border: 1px solid black;
-  border-bottom: 3px solid black;
   border-radius: 5px; /*borda aredondada*/
-
   font-weight: bold;
+  border: 1px solid black;
+  border-bottom: 3px solid black;  
 }
 .btn:hover{
   text-shadow: 1px 1px 1px black;
