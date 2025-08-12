@@ -62,7 +62,7 @@ namespace project_school_API.Data
                     ProfessorId = 3,
                 },
             });
-
+            //TODO: ver nececidade do base.OnModelCreating
             //base.OnModelCreating(modelBuilder);
         }
 

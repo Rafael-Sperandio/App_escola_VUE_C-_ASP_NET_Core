@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using project_school_API.Data;
+using project_school_API.Models;
 
 namespace project_school_API.Controllers
 {
@@ -9,52 +11,109 @@ namespace project_school_API.Controllers
 
 
         private readonly ILogger<ProfessorController> _logger;
+        private readonly IRepository _repository;
         //rever nececidade loger
-        public ProfessorController(ILogger<ProfessorController> logger)
+        public ProfessorController(ILogger<ProfessorController> logger, IRepository repository)
         {
             _logger = logger;
+            _repository = repository;
         }
-
-        [HttpGet(Name = "valores")]
-        public string GetAluno()
-        {
-            return "Aluno";
-        }
-
+        
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok();
+            try
+            {
+                var result = await _repository.GetAllProfesoresAsync(true);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(500, "Banco de dados falhou");
+            }
         }
-        [HttpGet("{professorId")]
-        public IActionResult GetId(int professorId)
+        [HttpGet("{professorId}")]
+        public async Task<IActionResult> GetByProfessorId(int professorId)
         {
-            return Ok();
+            try
+            {
+                var result = await _repository.GetProfesoreByIdAsync(professorId, true);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(500, "Banco de dados falhou");
+            }
         }
 
         [HttpPost]
-        public IActionResult Post()
+        public async Task<IActionResult> Post(Professor professor)
         {
-            return Ok();
-        }
-        [HttpPut("{professorId")]
+            try
+            {
+                _repository.Add(professor);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Created($"/Professor/{professor.Id}", professor);
 
-        public IActionResult Put(int professorId)
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(500, "Banco de dados falhou");
+            }
+        }
+        [HttpPut("{professorId}")]
+
+        public async Task<IActionResult> Put(int professorId, Professor professor)
         {
-            return Ok();
+            try
+            {
+                var professorExiste = await _repository.GetProfesoreByIdAsync(professorId);
+                if (professorExiste == null)
+                {
+                    return NotFound();
+                }
+                _repository.Update(professor);
+                if (await _repository.SaveChangesAsync())
+                {
+                    professor = await _repository.GetProfesoreByIdAsync(professorId);
+                    return Created($"/Professor/{professor.Id}", professor);
+
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(500, "Banco de dados falhou");
+            }
         }
 
-        [HttpDelete("{professorId")]
-        public IActionResult Delete(int professorId)
+        [HttpDelete("{professorId}")]
+        public async Task<IActionResult> Delete(int professorId)
         {
-            return Ok();
-        }
+            try
+            {
+                var professor = await _repository.GetProfesoreByIdAsync(professorId);
+                if (professor == null)
+                {
+                    return NotFound();
+                }
+                _repository.Delete(professor);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Ok();
 
-        /*
-        [HttpGet]
-        public IActionResult Get()
-        {
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(500, "Banco de dados falhou");
+            }
         }
-        */
+        
+
     }
 }
